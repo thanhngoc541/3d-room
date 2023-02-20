@@ -1,1 +1,0 @@
-This folder for configuration and additional information (version, v.v)

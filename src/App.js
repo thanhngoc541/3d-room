@@ -13,12 +13,17 @@ import BoundingBox from './components/HelperComponents/BoundingBox';
 import ObjectDetails from './components/UIComponents/ObjectDetails';
 import WallDetails from './components/UIComponents/WallDetails';
 import * as default_json_room from './default_room.json';
-import { Bluesprint } from './bluesprint';
-import { ConvertJson2DTo3D } from './helpers/Convert';
-
+import WallModel from './models/wall.js';
 function App() {
-    let default_room = JSON.stringify(default_json_room);
-    const [walls, setWalls] = useState(ConvertJson2DTo3D(JSON.parse(default_room).floorplan));
+    let default_room = JSON.parse(JSON.stringify(default_json_room));
+    console.log(default_room);
+    const [walls, setWalls] = useState([
+        new WallModel([16.39, 0.2, 10.39], [0, -0.1, 0], null, '/wood.jpg'),
+        new WallModel([0.2, 8, 10.2], [-8.1, 3.8, -0.1], 'white', null, [0, 0, 0]),
+        new WallModel([0.2, 8, 10.2], [8.1, 3.8, -0.1], 'white', null, [0, 0, 0]),
+        new WallModel([16, 8, 0.2], [0, 3.8, -5.1], 'white', null, [0, 0, 0]),
+        new WallModel([16.4, 8, 0.2], [0, 3.8, 5.1], 'white', null, [0, 0, 0]),
+    ]);
     const [objects, setObjects] = useState([]);
     const [focusedObject, setFocusedObject] = useState(null);
     const [focusedWall, setFocusedWall] = useState(null);
@@ -28,41 +33,41 @@ function App() {
     let currentObject = null;
 
     //2D viewer
-    useEffect(() => {
-        console.log('run use effect');
-        let options = {
-            viewer2d: {
-                id: 'bp3djs-viewer2d',
-                viewer2dOptions: {
-                    'corner-radius': 12.5,
-                    'boundary-point-radius': 5.0,
-                    'boundary-line-thickness': 2.0,
-                    'boundary-point-color': '#030303',
-                    'boundary-line-color': '#090909',
-                    pannable: true,
-                    zoomable: true,
-                    scale: false,
-                    rotate: true,
-                    translate: true,
-                    dimlinecolor: '#3E0000',
-                    dimarrowcolor: '#FF0000',
-                    dimtextcolor: '#000000',
-                    pixiAppOptions: {
-                        resolution: 1,
-                    },
-                    pixiViewportOptions: {
-                        passiveWheel: false,
-                    },
-                },
-            },
-            textureDir: 'models/textures/', //Note: có vẻ vô lý
-            widget: false,
-            resize: true,
-        };
-        let blueprint = new Bluesprint(options);
-        blueprint.model.loadSerialized(default_room);
-        setBlueprint(blueprint);
-    }, []);
+    // useEffect(() => {
+    //     console.log('run use effect');
+    //     let options = {
+    //         viewer2d: {
+    //             id: 'bp3djs-viewer2d',
+    //             viewer2dOptions: {
+    //                 'corner-radius': 12.5,
+    //                 'boundary-point-radius': 5.0,
+    //                 'boundary-line-thickness': 2.0,
+    //                 'boundary-point-color': '#030303',
+    //                 'boundary-line-color': '#090909',
+    //                 pannable: true,
+    //                 zoomable: true,
+    //                 scale: false,
+    //                 rotate: true,
+    //                 translate: true,
+    //                 dimlinecolor: '#3E0000',
+    //                 dimarrowcolor: '#FF0000',
+    //                 dimtextcolor: '#000000',
+    //                 pixiAppOptions: {
+    //                     resolution: 1,
+    //                 },
+    //                 pixiViewportOptions: {
+    //                     passiveWheel: false,
+    //                 },
+    //             },
+    //         },
+    //         textureDir: 'models/textures/', //Note: có vẻ vô lý
+    //         widget: false,
+    //         resize: true,
+    //     };
+    //     let blueprint = new Bluesprint(options);
+    //     blueprint.model.loadSerialized(default_room);
+    //     setBlueprint(blueprint);
+    // }, []);
 
     const saveFile = async (blob) => {
         const a = document.createElement('a');
@@ -138,8 +143,8 @@ function App() {
     };
 
     const handleAddTexture = (object, item) => {
-        console.log("DEBUG: add texture into object ", object);
-        console.log('DEBUG: handle add texture ', item)
+        console.log('DEBUG: add texture into object ', object);
+        console.log('DEBUG: handle add texture ', item);
         object.texture = item.value;
         setObjects([...objects, object]);
     };
@@ -313,21 +318,9 @@ function App() {
 
     console.log('APP RENDERING.......');
 
-    const [is3d, setIs3d] = useState(true);
-    const handleTransform = () => {
-        let walls = ConvertJson2DTo3D(blueprint.model.floorplan.saveFloorplan());
-        setWalls(walls);
-        setIs3d(!is3d);
-    };
     return (
         <div>
-            <div id="bp3d-js-app" hidden={is3d}>
-                <button onClick={handleTransform} id="transform">
-                    Transform
-                </button>
-                <div id="bp3djs-viewer2d" />
-            </div>
-            <div style={{ height: '100vh', width: '100vw' }} hidden={!is3d}>
+            <div style={{ height: '100vh', width: '100vw' }}>
                 <FloatingButtons
                     importData={importData}
                     exportData={exportData}
@@ -335,7 +328,6 @@ function App() {
                     setMode={setMode}
                     addModel={addModel}
                     createWallHandle={createWallHandle}
-                    handleTransform={handleTransform}
                 />
                 <ObjectDetails
                     rotateObject={(e) => rotateObject(focusedObject, e)}

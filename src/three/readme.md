@@ -1,1 +1,0 @@
-This folder for controling logic of 3d objects
