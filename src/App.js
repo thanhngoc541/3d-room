@@ -13,9 +13,11 @@ import BoundingBox from './components/HelperComponents/BoundingBox';
 import ObjectDetails from './components/UIComponents/ObjectDetails';
 import WallDetails from './components/UIComponents/WallDetails';
 import * as default_json_room from './default_room.json';
+import * as my_room_json from './my-room.json';
 import WallModel from './models/wall.js';
 function App() {
     let default_room = JSON.parse(JSON.stringify(default_json_room));
+    let my_room = JSON.parse(JSON.stringify(my_room_json));
     console.log(default_room);
     const [walls, setWalls] = useState([
         new WallModel([16.39, 0.2, 10.39], [0, -0.1, 0], null, '/wood.jpg'),
@@ -27,7 +29,6 @@ function App() {
     const [objects, setObjects] = useState([]);
     const [focusedObject, setFocusedObject] = useState(null);
     const [focusedWall, setFocusedWall] = useState(null);
-    const [blueprint, setBlueprint] = useState({});
     const [mode, setMode] = useState('');
 
     let currentObject = null;
@@ -224,7 +225,9 @@ function App() {
         if (lockY) return [position[0], (dims[1] * customScale) / 2, position[2]];
         return position;
     };
-
+    useEffect(() => {
+        importData(my_room);
+    }, []);
     const getObjects = () => (
         <Suspense fallback={null}>
             {objects.map((object, index) => {
@@ -317,7 +320,6 @@ function App() {
     };
 
     console.log('APP RENDERING.......');
-
     return (
         <div>
             <div style={{ height: '100vh', width: '100vw' }}>
