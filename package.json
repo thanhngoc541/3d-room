@@ -28,6 +28,7 @@
         "alpha-shape": "^1.0.0",
         "bezier-js": "^2.4.0",
         "braces": "^2.3.2",
+        "cross-env": "^7.0.3",
         "deasync": "^0.1.21",
         "detect-touch-device": "^1.1.5",
         "es6-enum": "^1.1.0",
